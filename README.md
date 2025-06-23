@@ -4,6 +4,7 @@
 
 * go to `/mcps/mcp-mongj/mongodb-mcp-server`
 * open in terminal
+* git clone https://github.com/mongodb-js/mongodb-mcp-server
 * run: `sudo docker build -t mongodb_mcp_server . -f Dockerfile`
 
 ------------------------
