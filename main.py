@@ -13,6 +13,8 @@ from get_env import load_env, get_env_value
 
 load_env()
 key = get_env_value('OPENAI_API_KEY')
+print(key)
+print(get_env_value('MDB_MCP_CONNECTION_STRING'))
 os.environ["OPENAI_API_KEY"] = key
 
 
