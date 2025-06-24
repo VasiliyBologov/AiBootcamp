@@ -1,2 +1,6 @@
 openai-agents
 fastapi
+uvicorn
+pymongo
+python-dotenv
+pydantic
