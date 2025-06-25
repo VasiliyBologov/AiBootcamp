@@ -53,6 +53,7 @@ app.mount("/static", StaticFiles(directory="client"), name="static")
 class MessageCreate(BaseModel):
     message: str
     role: str = "user"
+    sessionId: Optional[str]
 
 class MessageResponse(BaseModel):
     id: str
@@ -74,11 +75,11 @@ async def root():
 async def ask():
     return {"status": "ok"}
 
-@app.get("/api/chat")
-async def get_chat():
+@app.get("/api/chat/{sessionId}")
+async def get_chat(sessionId: str = None):
     """Get the most recent chat messages"""
     try:
-        messages = db.get_recent_messages(limit=10)
+        messages = db.get_recent_messages(session_id=sessionId, limit=10)
         return {"messages": messages}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -86,13 +87,17 @@ async def get_chat():
 @app.post("/api/chat/message")
 async def add_message(message_data: MessageCreate):
     """Add a new message to the chat"""
+
     try:
-        message_id = db.add_message(role=message_data.role, text=message_data.message)
+        message_id = db.add_message(role=message_data.role, text=message_data.message, session_id=message_data.sessionId)
+
+
+        await consultant_agent.run()
         r = await consultant_agent.ask(message_data.message)
 
         # Return a support reply (this could be enhanced with AI response generation)
         reply_text = f"Support: {r}"
-        reply_id = db.add_message(role="support", text=reply_text)
+        reply_id = db.add_message(role="support", text=reply_text, session_id=message_data.sessionId)
         return {"status": "success", "message_id": message_id, "reply": reply_text}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -47,7 +47,7 @@ class MongoDBClient:
         if self.client:
             self.client.close()
 
-    def add_message(self, role: str, text: str) -> str:
+    def add_message(self, role: str, text: str, session_id: str) -> str:
         """
         Add a new message to the database.
 
@@ -69,14 +69,15 @@ class MongoDBClient:
         message = {
             "role": role,
             "text": text,
-            "date": datetime.datetime.utcnow()
+            "date": datetime.datetime.utcnow(),
+            "sessionId": session_id
         }
 
         # Insert the message
         result = self.messages_collection.insert_one(message)
         return str(result.inserted_id)
 
-    def get_recent_messages(self, limit: int = 10) -> List[Dict[str, Any]]:
+    def get_recent_messages(self, session_id: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
         Get the most recent messages from the database.
 
@@ -90,7 +91,7 @@ class MongoDBClient:
         #     raise RuntimeError("Not connected to MongoDB. Call connect() first.")
 
         # Query for the most recent messages
-        cursor = self.messages_collection.find().sort("date", -1).limit(limit)
+        cursor = self.messages_collection.find({"sessionId": session_id}).sort("date", -1).limit(limit)
 
         # Convert ObjectId to string for JSON serialization
         messages = []

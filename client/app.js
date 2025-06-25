@@ -12,6 +12,16 @@ const API_ENDPOINTS = {
 
 // Chat state
 let isWaitingForResponse = false;
+let sessionId = localStorage.getItem('sessionId') || generateSessionId();
+
+/**
+ * Generate a unique session ID for the user
+ */
+function generateSessionId() {
+  const newSessionId = Date.now().toString(36) + Math.random().toString(36).substring(2);
+  localStorage.setItem('sessionId', newSessionId);
+  return newSessionId;
+}
 
 /**
  * Fetch chat history from the server
@@ -20,7 +30,7 @@ function loadMessages() {
   // Don't fetch again if we're waiting for a response
   if (isWaitingForResponse) return;
 
-  fetch(API_ENDPOINTS.GET_CHAT)
+  fetch(`${API_ENDPOINTS.GET_CHAT}/${sessionId}`)
     .then(handleResponse)
     .then(data => {
       // Clear loading indicator if it exists
@@ -87,7 +97,10 @@ function sendMessage() {
   fetch(API_ENDPOINTS.SEND_MESSAGE, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({message: text})
+    body: JSON.stringify({
+      message: text,
+      sessionId: sessionId
+    })
   })
   .then(handleResponse)
   .then(data => {
@@ -134,6 +147,14 @@ setInterval(loadMessages, 4000);
 
 // Initial load
 loadMessages();
+
+// Check for session changes on storage events (for multi-tab support)
+window.addEventListener('storage', (event) => {
+  if (event.key === 'sessionId' && event.newValue && event.newValue !== sessionId) {
+    sessionId = event.newValue;
+    loadMessages(); // Reload messages with new session ID
+  }
+});
 
 // Add connection status handling
 window.addEventListener('online', () => {
