@@ -6,6 +6,8 @@ from pydantic import BaseModel
 from typing import List, Optional
 import os
 import pathlib
+import uvicorn
+import asyncio
 
 from db import MongoDBClient
 from get_env import load_env, get_env_value
@@ -15,8 +17,17 @@ from ai.api_agent import ConsultantAgent
 load_env()
 
 # Initialize MongoDB AI Agent
-mongo_agent = ConsultantAgent()
+consultant_agent = ConsultantAgent()
 
+
+# async def async_run():
+#
+#     await consultant_agent.run()
+#     # ... run other agents
+#
+#
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(async_run())
 
 
 # Initialize MongoDB client
@@ -54,6 +65,9 @@ class MessageResponse(BaseModel):
 @app.get("/", response_class=FileResponse)
 async def root():
     """Serve the client/index.html file"""
+
+    await consultant_agent.run()
+
     return FileResponse("client/index.html")
 
 @app.get("/ask")
@@ -72,14 +86,12 @@ async def get_chat():
 @app.post("/api/chat/message")
 async def add_message(message_data: MessageCreate):
     """Add a new message to the chat"""
-    await mongo_agent.run()
     try:
         message_id = db.add_message(role=message_data.role, text=message_data.message)
-
-        r = await mongo_agent.ask(message_data.message)
+        r = await consultant_agent.ask(message_data.message)
 
         # Return a support reply (this could be enhanced with AI response generation)
-        reply_text = f"Ai db: {r}"
+        reply_text = f"Support: {r}"
         reply_id = db.add_message(role="support", text=reply_text)
         return {"status": "success", "message_id": message_id, "reply": reply_text}
     except ValueError as e:
@@ -87,6 +99,10 @@ async def add_message(message_data: MessageCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    try:
+        uvicorn.run(app, host="0.0.0.0", port=8080)
+    finally:
+        print("Done")

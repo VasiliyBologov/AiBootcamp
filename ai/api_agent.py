@@ -1,19 +1,17 @@
-import asyncio
+import logging
 import os
-import shutil
-import subprocess
-import time
-from typing import Any
 
 from agents import Agent, Runner, gen_trace_id, trace
 from agents.mcp import MCPServer, MCPServerSse, MCPServerStdio
-from agents.model_settings import ModelSettings
 
 from get_env import load_env, get_env_value
+
 
 load_env()
 key = get_env_value('OPENAI_API_KEY')
 os.environ["OPENAI_API_KEY"] = key
+
+logging.basicConfig(level=logging.INFO)
 
 class ConsultantAgent:
     def __init__(self):
@@ -21,6 +19,7 @@ class ConsultantAgent:
         self.mcp = None
 
     async def run(self):
+        logging.info(f"Run Agent: {self.__class__.__name__}")
         self.mcp = MCPServerStdio(
             name="Giter Fragrance API MCP Server",
             params={
@@ -45,6 +44,8 @@ class ConsultantAgent:
             mcp_servers=[self.mcp],
             # model_settings=ModelSettings(tool_choice="required"),
         )
+
+        logging.info(f"Agent: {self.__class__.__name__} - is ready.")
 
     async def ask(self, message) -> str:
         trace_id = gen_trace_id()
