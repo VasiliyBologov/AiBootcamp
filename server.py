@@ -10,12 +10,12 @@ import pathlib
 from db import MongoDBClient
 from get_env import load_env, get_env_value
 
-from ai.db_agent import DBAgent
+from ai.api_agent import ConsultantAgent
 
 load_env()
 
 # Initialize MongoDB AI Agent
-mongo_agent = DBAgent()
+mongo_agent = ConsultantAgent()
 
 
 
