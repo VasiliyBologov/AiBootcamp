@@ -130,7 +130,7 @@ chatInput.addEventListener('keydown', e => {
 });
 
 // Poll for new messages every 3 seconds
-setInterval(loadMessages, 3000);
+setInterval(loadMessages, 4000);
 
 // Initial load
 loadMessages();

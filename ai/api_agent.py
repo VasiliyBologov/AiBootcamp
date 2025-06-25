@@ -40,7 +40,7 @@ class ConsultantAgent:
 
         self.agent = Agent(
             name="Assistant",
-            instructions="You are an online perfume consultant. Use the tools to find information about product from api.",
+            instructions="You are an online perfume consultant. Use the tools to find information about product from api. Use link mask 'https://main.giter.world/catalog/fragrance/product/{productId} for presentations info. '  ",
             model="gpt-4.1-nano",
             mcp_servers=[self.mcp],
             # model_settings=ModelSettings(tool_choice="required"),
