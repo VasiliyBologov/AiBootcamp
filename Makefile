@@ -1,7 +1,7 @@
-.PHONY: setup run dev clean help docker supervisor
+.PHONY: setup run dev clean help docker
 
 # Default target
-all: setup run supervisor
+all: setup run
 
 # Setup virtual environment and install dependencies
 setup:
