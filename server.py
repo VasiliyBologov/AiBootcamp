@@ -13,11 +13,15 @@ from db import MongoDBClient
 from get_env import load_env, get_env_value
 
 from ai.api_agent import ConsultantAgent
+from ai.support_agent import SupportAgent
+from ai.main_agent import MainAgent
 
 load_env()
 
 # Initialize MongoDB AI Agent
 consultant_agent = ConsultantAgent()
+support_agent = SupportAgent()
+main_agent = MainAgent()
 
 
 # async def async_run():
@@ -93,7 +97,9 @@ async def add_message(message_data: MessageCreate):
 
 
         await consultant_agent.run()
-        r = await consultant_agent.ask(message_data.message)
+        await support_agent.run()
+        await main_agent.run(consultant_agent.agent, support_agent.agent)
+        r = await main_agent.ask(message_data.message)
 
         # Return a support reply (this could be enhanced with AI response generation)
         reply_text = f"Support: {r}"
