@@ -10,6 +10,9 @@ setup:
 
 	@echo "Configuring supervisord..."
 	# Supervisord
+	apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y supervisor && \
+	rm -rf /var/lib/apt/lists/*
 	mkdir -p /etc/supervisor/conf.d
 	COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 	supervisord -c /etc/supervisor/conf.d/supervisord.conf
