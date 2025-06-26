@@ -1,4 +1,5 @@
 from mcp.server.fastmcp import FastMCP
+from typing import Dict, List
 
 mcp = FastMCP("SupportBot")
 
@@ -67,10 +68,41 @@ FAQ_RESPONSES = {
         "С франшизой Giter вы входите в мир красоты с надёжной системой и перспективами роста."
     )
 }
-@mcp.tool()
-def faq(question: str) -> str:
-    """Отвечает на частые вопросы по ключевым словам"""
-    for keyword, answer in FAQ_RESPONSES.items():
-        if keyword in question.lower():
-            return answer
-    return "Извините, я пока не знаю ответа на этот вопрос. Попробуйте переформулировать или уточните запрос."
+@mcp.tool(name="List-of-topics", description="Returns the list of topics for frequently asked questions")
+def topics() -> List[str]:
+    """
+    Returns a list of topics that match frequently asked questions.
+
+    This function iterates through the predefined FAQ topics and
+    checks if they match the given question. It collects all
+    the matched topics and returns them as a list.
+
+    :returns: A list of topics that match questions based on the
+              given FAQ_RESPONSES mapping.
+
+    :rtype: List[str]
+    """
+    res = []
+    for key in FAQ_RESPONSES.keys():
+        res.append(key)
+    return res
+
+
+@mcp.tool(name="Info-by-key", description="Returns the answer to a frequently asked question using a provided key. ")
+def info_by_key_of_topit(key: str) -> str:
+    """
+    Returns the answer to a frequently asked question using a provided key.
+
+    This method uses a dictionary, `FAQ_RESPONSES`, to map provided keys to
+    corresponding pre-defined responses. If the key exists in the dictionary,
+    its associated response is returned. If the key is not found, a default
+    response is returned, asking the user to rephrase or clarify their request.
+
+    :param key: A string representing the key to lookup a corresponding
+        response in the FAQ_RESPONSES dictionary.
+    :return: A string containing the response to the corresponding key, or a
+        empty string if the key is not found.
+    """
+    if key in FAQ_RESPONSES.keys():
+        return FAQ_RESPONSES[key]
+    return ""

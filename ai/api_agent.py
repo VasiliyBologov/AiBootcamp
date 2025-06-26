@@ -38,7 +38,7 @@ class ConsultantAgent:
         await self.mcp.connect()
 
         self.agent = Agent(
-            name="Assistant",
+            name="Consultant",
             instructions="You are an online perfume consultant. Use the tools to find information about product from api. Use link mask 'https://main.giter.world/catalog/fragrance/product/{productId} for presentations info. '  ",
             model="gpt-4.1-nano",
             mcp_servers=[self.mcp],

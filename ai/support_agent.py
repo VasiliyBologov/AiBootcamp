@@ -33,7 +33,7 @@ class SupportAgent:
         )
         await self.mcp.connect()
         self.agent = Agent(
-            name="SupportAssistant",
+            name="Assistant",
             instructions = (
                 "You are a helpful and knowledgeable assistant."
                 "Use available MCP tools to answer user questions accurately and efficiently."
@@ -47,7 +47,7 @@ class SupportAgent:
     async def ask(self, message) -> str:
         trace_id = gen_trace_id()
         r = "No result"
-        with trace(workflow_name="MCP ES", trace_id=trace_id):
+        with trace(workflow_name="Assistant", trace_id=trace_id):
             result = await Runner.run(starting_agent=self.agent, input=message)
             print(result.final_output)
             r = result.final_output

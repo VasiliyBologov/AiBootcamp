@@ -18,9 +18,9 @@ class MainAgent:
     async def run(self, api_agent, support_agent):
         self.agent = Agent(
             name="Assistant",
-            instructions = ("You are an online assistant. To answer questions use Handoffs consultant and assistant agents"),
+            instructions = ("You are an online assistant. To answer questions use Handoffs consultant and assistant agents. consultant - can tell about products and goods, select the right one by description. Assistant can tell about discounts, affiliate program or support questions"),
             model="gpt-4.1-mini",
-            handoffs=[handoff(api_agent), handoff(support_agent)],
+            handoffs=[api_agent, support_agent],
         )
 
     async def ask(self, message) -> str:

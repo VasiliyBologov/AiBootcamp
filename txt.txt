@@ -1,0 +1,8 @@
+
+
+docker build -t aiboot . -f Dockerfile
+
+
+docker run -it --rm --name=ai-boot -p 80:80 aiboot
+
+
