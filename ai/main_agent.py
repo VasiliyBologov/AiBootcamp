@@ -26,8 +26,8 @@ class MainAgent:
     async def ask(self, message) -> str:
         trace_id = gen_trace_id()
         r = "No result"
-        with trace(workflow_name="MCP ES", trace_id=trace_id):
-            result = await Runner.run(starting_agent=self.agent, input=message)
+        with trace(workflow_name="Online assistant", trace_id=trace_id):
+            result = await Runner.run(starting_agent=self.agent, input=message, max_turns=10)
             print(result.final_output)
             r = result.final_output
         return r

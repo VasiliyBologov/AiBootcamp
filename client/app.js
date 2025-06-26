@@ -24,13 +24,26 @@ function generateSessionId() {
 }
 
 /**
+ * Create AbortController with timeout
+ */
+function createTimeoutController(timeoutMs = 30000) {
+  const controller = new AbortController();
+  setTimeout(() => controller.abort(), timeoutMs);
+  return controller;
+}
+
+/**
  * Fetch chat history from the server
  */
 function loadMessages() {
   // Don't fetch again if we're waiting for a response
   if (isWaitingForResponse) return;
 
-  fetch(`${API_ENDPOINTS.GET_CHAT}/${sessionId}`)
+  const controller = createTimeoutController(30000); // 30 seconds timeout
+
+  fetch(`${API_ENDPOINTS.GET_CHAT}/${sessionId}`, {
+    signal: controller.signal
+  })
     .then(handleResponse)
     .then(data => {
       // Clear loading indicator if it exists
@@ -46,7 +59,11 @@ function loadMessages() {
     })
     .catch(error => {
       console.error('Error loading messages:', error);
-      chatMessages.innerHTML = '<div class="message system">Failed to load chat history. Please refresh the page.</div>';
+      if (error.name === 'AbortError') {
+        chatMessages.innerHTML = '<div class="message system">Request timed out. Please try again.</div>';
+      } else {
+        chatMessages.innerHTML = '<div class="message system">Failed to load chat history. Please refresh the page.</div>';
+      }
     });
 }
 
@@ -93,6 +110,8 @@ function sendMessage() {
   chatMessages.appendChild(typingIndicator);
   scrollToBottom();
 
+  const controller = createTimeoutController(30000); // 30 seconds timeout
+
   // Send message to server
   fetch(API_ENDPOINTS.SEND_MESSAGE, {
     method: 'POST',
@@ -100,7 +119,8 @@ function sendMessage() {
     body: JSON.stringify({
       message: text,
       sessionId: sessionId
-    })
+    }),
+    signal: controller.signal
   })
   .then(handleResponse)
   .then(data => {
@@ -122,7 +142,13 @@ function sendMessage() {
   .catch(error => {
     console.error('Error sending message:', error);
     typingIndicator.remove();
-    addMessage({role: 'system', text: 'Failed to send message. Please try again.'});
+    
+    if (error.name === 'AbortError') {
+      addMessage({role: 'system', text: 'Request timed out after 30 seconds. Please try again.'});
+    } else {
+      addMessage({role: 'system', text: 'Failed to send message. Please try again.'});
+    }
+    
     chatInput.disabled = false;
     sendBtn.disabled = false;
     isWaitingForResponse = false;

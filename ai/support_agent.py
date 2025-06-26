@@ -19,7 +19,7 @@ class SupportAgent:
 
     async def run(self):
         self.mcp = MCPServerStdio(
-            name="support-bot",
+            name="Giter Support MCP Server",
             params={
                 "command": "uv",
                 "args": [
