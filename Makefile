@@ -1,17 +1,26 @@
-.PHONY: setup run dev clean help
+.PHONY: setup run dev clean help docker supervisor
 
 # Default target
-all: setup run
+all: setup run supervisor
 
 # Setup virtual environment and install dependencies
 setup:
 	@echo "Installing dependencies..."
 	pip install -r requirements.txt
 
+	@echo "Configuring supervisord..."
+	# Supervisord
+	mkdir -p /etc/supervisor/conf.d
+	COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+	supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+
 # Run the server
 run:
 	@echo "Starting server..."
 	python server.py
+
+
 
 # Start mode (setup and run)
 start: setup run
