@@ -1,0 +1,57 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'e558a48a-c8e2-4436-9bed-6ee26c22caef'
+  imageRepository: 'ai-chat-service'
+  containerRegistry: 'giterappregistry.azurecr.io'
+  dockerfilePath: '**/Dockerfile'
+  tag: '$(Build.BuildId)'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build_Deploy
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+- stage: Deploy
+  displayName: Deploy web app
+  jobs:
+  - job: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: AzureRmWebAppDeployment@4
+      displayName: 'Azure App Service Deploy: ai-chat-service'
+      inputs:
+        ConnectionType: 'AzureRM'
+        azureSubscription: 'Azure subscription Giter (79391428-3302-4885-804c-b1ee4fe7ba36)'
+        appType: webAppContainer
+        WebAppName: 'ai-chat-service'
+        DockerNamespace: $(containerRegistry)
+        DockerRepository: $(imageRepository)
+        DockerImageTag: '$(tag)'
