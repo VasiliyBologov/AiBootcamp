@@ -82,6 +82,7 @@ async def ask():
 @app.get("/api/chat/{sessionId}")
 async def get_chat(sessionId: str = None):
     """Get the most recent chat messages"""
+    await consultant_agent.run()
     try:
         messages = db.get_recent_messages(session_id=sessionId, limit=10)
         return {"messages": messages}
@@ -91,7 +92,7 @@ async def get_chat(sessionId: str = None):
 @app.post("/api/chat/message")
 async def add_message(message_data: MessageCreate):
     """Add a new message to the chat"""
-
+    await consultant_agent.run()
     try:
         message_id = db.add_message(role=message_data.role, text=message_data.message, session_id=message_data.sessionId)
 
@@ -114,9 +115,6 @@ async def add_message(message_data: MessageCreate):
 
 if __name__ == "__main__":
     try:
-        port = os.getenv("PORT")
-        if not port:
-            port = 8000
-        uvicorn.run(app, reload=False, host="localhost", port=port)
+        uvicorn.run(app, reload=False, host="localhost", port=8000)
     finally:
         print("Done")
