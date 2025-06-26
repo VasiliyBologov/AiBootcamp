@@ -114,6 +114,9 @@ async def add_message(message_data: MessageCreate):
 
 if __name__ == "__main__":
     try:
-        uvicorn.run(app, reload=False, host="localhost", port=8000)
+        port = os.getenv("PORT")
+        if not port:
+            port = 8000
+        uvicorn.run(app, reload=False, host="localhost", port=port)
     finally:
         print("Done")
