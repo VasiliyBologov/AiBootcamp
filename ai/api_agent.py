@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 
 from agents import Agent, Runner, gen_trace_id, trace
 from agents.mcp import MCPServer, MCPServerSse, MCPServerStdio
@@ -36,6 +37,8 @@ class ConsultantAgent:
         )
 
         await self.mcp.connect()
+        # Give it 3 seconds to start
+        time.sleep(3)
 
         self.agent = Agent(
             name="Consultant",
