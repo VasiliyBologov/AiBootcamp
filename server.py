@@ -75,6 +75,13 @@ async def root():
     """Serve the client/index.html file"""
     return FileResponse("client/index.html")
 
+
+@app.get("/favicon.ico", response_class=FileResponse)
+async def favicon():
+    """Serve the client/index.html file"""
+    return FileResponse("client/favicon.ico")
+
+
 @app.get("/ask")
 async def ask():
     return {"status": "ok"}
