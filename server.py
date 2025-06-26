@@ -73,9 +73,6 @@ class MessageResponse(BaseModel):
 @app.get("/", response_class=FileResponse)
 async def root():
     """Serve the client/index.html file"""
-
-    await consultant_agent.run()
-
     return FileResponse("client/index.html")
 
 @app.get("/ask")
