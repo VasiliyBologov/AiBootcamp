@@ -35,7 +35,10 @@ main_agent = MainAgent()
 
 
 # Initialize MongoDB client
-db = MongoDBClient(connection_string=get_env_value('MDB_MCP_CONNECTION_STRING'))
+cs = os.environ.get("MDB_MCP_CONNECTION_STRING", None)
+if not os.environ.get("MDB_MCP_CONNECTION_STRING", None):
+    cs = get_env_value('MDB_MCP_CONNECTION_STRING')
+db = MongoDBClient(connection_string=cs)
 db.connect()
 
 # Initialize FastAPI app

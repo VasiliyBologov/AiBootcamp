@@ -6,10 +6,10 @@ from agents.mcp import MCPServer, MCPServerSse, MCPServerStdio
 
 from get_env import load_env, get_env_value
 
-
-load_env()
-key = get_env_value('OPENAI_API_KEY')
-os.environ["OPENAI_API_KEY"] = key
+if not os.environ.get("OPENAI_API_KEY", None):
+    load_env()
+    key = get_env_value('OPENAI_API_KEY')
+    os.environ["OPENAI_API_KEY"] = key
 
 logging.basicConfig(level=logging.INFO)
 
