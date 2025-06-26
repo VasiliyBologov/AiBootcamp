@@ -11,7 +11,7 @@ setup:
 	@echo "Configuring supervisord..."
 	# Supervisord
 	#apt-get update
-	apt-get install -y supervisor
+	sudo apt-get install -y supervisor
 	#rm -rf /var/lib/apt/lists/*
 	mkdir -p /etc/supervisor/conf.d
 	COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
