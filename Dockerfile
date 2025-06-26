@@ -24,8 +24,14 @@ COPY ./ ./
 
 COPY requirements.txt .
 
+RUN pip install --upgrade pip
+
 RUN pip install -r requirements.txt
 RUN pip install uv
+
+RUN pip install "mcp[cli]"
+
+
 
 COPY ./client/index.html /usr/share/nginx/html
 COPY ./client/app.js /usr/share/nginx/html

@@ -32,7 +32,7 @@ class ConsultantAgent:
                     "run",
                     "mcps/mcp-products/main.py"
                 ]
-            }
+            },
         )
 
         await self.mcp.connect()
